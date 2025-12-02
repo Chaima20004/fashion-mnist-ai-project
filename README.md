@@ -1,4 +1,5 @@
 #Fashion-MNIST Classifier - Progetto d'Esame AI
+
 **Studente:** Chaima Chourabi  
 **Matricola:** VR510606  
 **Repository:** https://github.com/Chaima20004/fashion-mnist-ai-project
