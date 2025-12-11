@@ -95,7 +95,7 @@ jobs:
         echo "✅ Docker image buildata correttamente"
     
     - name: 📤 Upload Docker artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: docker-build-files
         path: |
