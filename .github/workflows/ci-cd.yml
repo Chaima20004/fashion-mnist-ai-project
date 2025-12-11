@@ -2,105 +2,109 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # Permite esecuzione manuale
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     
     steps:
-    - name:  Checkout repository
+    - name: Checkout repository
       uses: actions/checkout@v3
     
-    - name:  Set up Python 3.9
+    - name: Set up Python 3.9
       uses: actions/setup-python@v4
       with:
         python-version: '3.9'
-        cache: 'pip'
     
-    - name:  Install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        echo "### Installazione dipendenze principali ###"
-        pip install torch==2.0.1 torchvision==0.15.2 numpy==1.24.3
-        
-        echo "### Installazione tools per testing ###"
-        pip install flake8==6.0.0 black==23.7.0 pytest==7.4.0
-        
-        echo "### Installazione resto requirements ###"
-        pip install -r requirements.txt || echo "  Requirements parziale OK"
+        pip install -r requirements.txt
     
-    - name:  Lint with flake8
+    - name: Lint with flake8
       run: |
-        echo "### Controllo qualità codice con flake8 ###"
-        # Testa se flake8 è installato
-        python -c "import flake8; print(' Flake8 installato')"
-        
-        # Esegui flake8 - continua anche se ci sono warning
-        python -m flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics --exit-zero
-        echo "### Controllo stile (solo avvisi) ###"
-        python -m flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+        pip install flake8
+        flake8 src/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 src/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     
-    - name:  Format check with black
+    - name: Format check with black
       run: |
-        echo "### Controllo formattazione con black ###"
-        python -c "import black; print(' Black installato')"
-        black --check src/ || echo "  Suggerimento: esegui 'black src/' per formattare"
-        continue-on-error: true
+        python -m pip install black
+        black --check src/ || echo "Note: Code formatting can be improved (not blocking)"
+      continue-on-error: true
     
-    - name:  Run unit tests
+    - name: Run unit tests
       run: |
-        echo "### Esecuzione test unitari ###"
-        python -m pytest tests/ -v --tb=short || echo "  Test falliti ma continuo"
-        
+        if [ -d "tests" ]; then
+          python -m pytest tests/ -v
+        else
+          echo "No tests directory found, skipping unit tests"
+        fi
     
-    - name:  Test imports
+    - name: Test imports
       run: |
-        echo "### Test import moduli ###"
         python -c "
         try:
             import torch
-            print(' torch importato')
             import torchvision
-            print(' torchvision importato')
-            
-            # Import dai nostri moduli
-            import sys
-            sys.path.append('src')
-            import model
-            print(' model.py importato')
-            import data_loader
-            print(' data_loader.py importato')
-            print(' TUTTI GLI IMPORT FUNZIONANO!')
-        except Exception as e:
-            print(f' Errore import: {e}')
+            import numpy as np
+            import pandas as pd
+            import matplotlib.pyplot as plt
+            import yaml
+            print('All imports successful')
+        except ImportError as e:
+            print(f'Import error: {e}')
             exit(1)
         "
-  
+    
+    - name: Validate config files
+      run: |
+        python -c "
+        import yaml
+        try:
+            with open('train_config.yaml', 'r') as f:
+                config = yaml.safe_load(f)
+            print(f'train_config.yaml loaded successfully')
+            print(f'Config structure: {list(config.keys())}')
+        except Exception as e:
+            print(f'Error in train_config.yaml: {e}')
+            exit(1)
+        "
+        
+        if [ -f "requirements.txt" ]; then
+          echo "requirements.txt found"
+        else
+          echo "requirements.txt not found"
+          exit 1
+        fi
+
   docker-build:
-    needs: test
     runs-on: ubuntu-latest
-    if: success()  # Esegue solo se test passa
+    needs: test
+    if: github.ref == 'refs/heads/main'
     
     steps:
-    - name:  Checkout repository
+    - name: Checkout repository
       uses: actions/checkout@v3
     
-    - name:  Build Docker image
-      run: |
-        echo "### Building Docker image ###"
-        docker build -t fashion-mnist-trainer:latest .
-        echo " Docker image buildata correttamente"
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
     
-    - name:  Upload Docker artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: docker-build-files
-        path: |
-          Dockerfile
-          Dockerfile.gradio
-        retention-days: 1
+    - name: Build Docker image
+      run: |
+        docker build -t fashion-mnist-train:latest -f Dockerfile.train .
+        echo "Training Docker image built successfully"
+        
+        if [ -f "Dockerfile.app" ]; then
+          docker build -t fashion-mnist-app:latest -f Dockerfile.app .
+          echo "App Docker image built successfully"
+        else
+          echo "No app Dockerfile found, skipping"
+        fi
+    
+    - name: Log Docker images
+      run: |
+        docker images | grep fashion-mnist
