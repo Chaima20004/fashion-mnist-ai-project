@@ -1,1 +1,21 @@
+# Dockerfile per interfaccia web Gradio
+FROM python:3.9-slim
 
+# Imposta directory di lavoro
+WORKDIR /app
+
+# Installa dipendenze Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia tutto il codice
+COPY . .
+
+# Predownload del dataset Fashion-MNIST
+RUN python -c "from torchvision import datasets; datasets.FashionMNIST(root='./data', train=True, download=True)"
+
+# Esponi la porta per Gradio
+EXPOSE 7860
+
+# Comando per avviare l'interfaccia web
+CMD ["python", "src/app_gradio.py"]
