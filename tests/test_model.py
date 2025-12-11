@@ -24,7 +24,7 @@ def test_model_creation():
     # Conta parametri
     params = count_parameters(model)
     assert params > 0
-    print(f"✅ Modello creato con {params:,} parametri")
+    print(f" Modello creato con {params:,} parametri")
     return True
 
 def test_model_forward():
@@ -42,7 +42,7 @@ def test_model_forward():
     assert output.shape == (batch_size, 10)
     assert not torch.isnan(output).any()
     assert not torch.isinf(output).any()
-    print(f"✅ Forward pass testato: output shape {output.shape}")
+    print(f" Forward pass testato: output shape {output.shape}")
     return True
 
 def test_data_loader():
@@ -63,7 +63,7 @@ def test_data_loader():
         assert labels.shape == (32,)
         break
     
-    print("✅ DataLoader testato correttamente")
+    print(" DataLoader testato correttamente")
     return True
 
 def test_model_parameters_update():
@@ -95,13 +95,13 @@ def test_model_parameters_update():
             break
     
     assert params_changed, "I parametri dovrebbero essere cambiati dopo l'optimizer step"
-    print("✅ Parametri si aggiornano correttamente durante il training")
+    print(" Parametri si aggiornano correttamente durante il training")
     return True
 
 def run_all_tests():
     """Esegue tutti i test"""
     print("\n" + "="*50)
-    print("🧪 ESECUZIONE TEST UNITARI")
+    print(" ESECUZIONE TEST UNITARI")
     print("="*50)
     
     tests_passed = 0
@@ -118,19 +118,19 @@ def run_all_tests():
         try:
             if test_func():
                 tests_passed += 1
-                print(f"✅ {test_func.__name__}: PASSATO")
+                print(f" {test_func.__name__}: PASSATO")
         except Exception as e:
             tests_failed += 1
-            print(f"❌ {test_func.__name__}: FALLITO - {str(e)}")
+            print(f" {test_func.__name__}: FALLITO - {str(e)}")
     
     print("\n" + "="*50)
-    print(f"📊 RISULTATI: {tests_passed} passati, {tests_failed} falliti")
+    print(f" RISULTATI: {tests_passed} passati, {tests_failed} falliti")
     print("="*50)
     
     if tests_failed == 0:
-        print("🎉 TUTTI I TEST SONO PASSATI CON SUCCESSO!")
+        print(" TUTTI I TEST SONO PASSATI CON SUCCESSO!")
     else:
-        print("⚠️  ALCUNI TEST SONO FALLITI")
+        print("  ALCUNI TEST SONO FALLITI")
     
     return tests_failed == 0
 
