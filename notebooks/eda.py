@@ -107,21 +107,21 @@ print("\n" + "="*60)
 print("CONCLUSIONI EDA - FASHION-MNIST")
 print("="*60)
 print("""
-1. 📐 DATASET COMPLETO E BILANCIATO
+1.  DATASET COMPLETO E BILANCIATO
    • 70,000 immagini totali (60k train, 10k test)
    • 6,000 immagini per classe nel train set
    • 1,000 immagini per classe nel test set
 
-2. 🖼️ CARATTERISTICHE IMMAGINI
+2.  CARATTERISTICHE IMMAGINI
    • Dimensioni: 28×28 pixel
    • Canali: 1 (scala di grigi)
    • Valori pixel normalizzati
 
-3. 🏷️ 10 CLASSI DI ABBIGLIAMENTO
+3.  10 CLASSI DI ABBIGLIAMENTO
    • Classi ben definite e distinguibili
    • Distribuzione uniforme
 
-4. ✅ IDONEITÀ PER IL PROGETTO
+4.  IDONEITÀ PER IL PROGETTO
    • Dataset di dimensioni adeguate
    • Problema di classificazione chiaro
    • Integrazione semplice con PyTorch
