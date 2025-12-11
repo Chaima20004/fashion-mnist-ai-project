@@ -50,12 +50,13 @@ jobs:
         echo "### Controllo formattazione con black ###"
         python -c "import black; print(' Black installato')"
         black --check src/ || echo "  Suggerimento: esegui 'black src/' per formattare"
+        continue-on-error: true
     
     - name:  Run unit tests
       run: |
         echo "### Esecuzione test unitari ###"
         python -m pytest tests/ -v --tb=short || echo "  Test falliti ma continuo"
-        continue-on-error: true
+        
     
     - name:  Test imports
       run: |
