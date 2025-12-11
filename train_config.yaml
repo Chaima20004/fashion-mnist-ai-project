@@ -1,6 +1,30 @@
-batch_size: 64
-learning_rate: 0.001
-epochs: 10
-val_split: 0.2
-save_dir: artifacts
-model_name: fashion_cnn
+# Train configuration
+train:
+  batch_size: 64
+  epochs: 10
+  learning_rate: 0.001
+  optimizer: "adam"
+  
+# Model configuration  
+model:
+  num_classes: 10
+  hidden_dim: 128
+  dropout_rate: 0.5
+  
+# Data configuration
+data:
+  data_dir: "./data"
+  img_size: 28
+  num_workers: 4
+  
+# Logging and saving
+logging:
+  log_dir: "./logs"
+  save_model: true
+  model_path: "./models/fashion_mnist_cnn.pth"
+  
+# Training settings
+settings:
+  device: "cuda"  # or "cpu"
+  seed: 42
+  use_amp: false  # Automatic Mixed Precision
