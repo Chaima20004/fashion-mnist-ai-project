@@ -93,18 +93,30 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
     
-    - name: Build Docker image
+    - name: Build Docker images
       run: |
-        docker build -t fashion-mnist-train:latest -f Dockerfile.train .
-        echo "Training Docker image built successfully"
+        echo "Building Docker images..."
         
-        if [ -f "Dockerfile.app" ]; then
-          docker build -t fashion-mnist-app:latest -f Dockerfile.app .
-          echo "App Docker image built successfully"
+        # 1. Build dell'immagine principale (training)
+        if [ -f "Dockerfile" ]; then
+          echo "Building from Dockerfile (main/training image)"
+          docker build -t fashion-mnist:latest -f Dockerfile .
+          echo "Main Docker image built successfully"
         else
-          echo "No app Dockerfile found, skipping"
+          echo "ERROR: Dockerfile not found"
+          exit 1
+        fi
+        
+        # 2. Build dell'immagine Gradio app
+        if [ -f "Dockerfile.gradio" ]; then
+          echo "Building from Dockerfile.gradio (Gradio app)"
+          docker build -t fashion-mnist-gradio:latest -f Dockerfile.gradio .
+          echo "Gradio Docker image built successfully"
+        else
+          echo "Note: Dockerfile.gradio not found, skipping Gradio build"
         fi
     
     - name: Log Docker images
       run: |
+        echo "Docker images created:"
         docker images | grep fashion-mnist
