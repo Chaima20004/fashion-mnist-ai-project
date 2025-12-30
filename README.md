@@ -12,7 +12,7 @@
 
 ##  Descrizione
 
-Progetto completo per il corso di Intelligenza Artificiale che implementa un classificatore di immagini Fashion-MNIST utilizzando una CNN con PyTorch. Il progetto include l'intero ciclo di sviluppo ML: analisi dati, addestramento modello, containerizzazione Docker, pipeline CI/CD automatizzata e interfaccia web interattiva.
+Progetto completo  che implementa un classificatore di immagini Fashion-MNIST utilizzando una CNN con PyTorch. Il progetto include l'intero ciclo di sviluppo ML: analisi dati, addestramento modello, containerizzazione Docker, pipeline CI/CD automatizzata e interfaccia web interattiva.
 
 ##  Caratteristiche
 
